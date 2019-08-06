@@ -24,20 +24,22 @@ const int ZOOM[] PROGMEM ={341,171,22,21,22,21,21,21,22,21,22,21,22,21,21,21,22,
 
 void pulse38khz(int count){
     for (int i = 0; i < count; i++){
-      PORTD|=0x08;
+      PORTD|=0x08; //this sets on bit 3
       delayMicroseconds(13);
-      PORTD&=0x08;
+      //Serial.println(digitalRead(ir_led_pin));
+      PORTD&=0b11110111; // clears only 3
       delayMicroseconds(13);
+      //Serial.println(digitalRead(ir_led_pin));
     }
   }
 
-void sendcode(const int * code){
-  for (int i = 0; i < sizeof(code)/sizeof(int); i++){
-
+void sendcode(const int * code, int l){
+  //Serial.println(l);
+  for (int i = 0; i < l; i++){
       int d = pgm_read_word(&code[i]);
-      Serial.print(i);
-      Serial.print(' ');
-      Serial.println(d); //COMMENT THIS OUT!
+      //Serial.print(i);
+      //Serial.print(' ');
+      //Serial.println(d); //COMMENT THIS OUT!
       if (i&1) { //odd codes are off, even codes are on
         delayMicroseconds(26*d);
       }else{
@@ -52,23 +54,25 @@ void setup() {
   digitalWrite(ir_led_pin,LOW);
   pulse38khz(32000); //just for testing
   Serial.begin(115200);
+  Serial.print("reddy ");
+  Serial.println(sizeof(BRIGHTNESS_DOWN));
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  sendcode(BRIGHTNESS_DOWN);
-  sendcode(BRIGHTNESS_UP);
-  sendcode(CURSOR_DOWN );
-  sendcode(CURSOR_ENTER );
-  sendcode(CURSOR_LEFT );
-  sendcode(CURSOR_RIGHT );
-  sendcode(CURSOR_UP );
-  sendcode(FORWARD );
-  sendcode(MUTE_TOGGLE );
-  sendcode(PLAY_PAUSE_TOGGLE );
-  sendcode(RETURN );
-  sendcode(REVERSE );
-  sendcode(VOLUME_DOWN );
-  sendcode(VOLUME_UP );
-  sendcode(ZOOM );
+  sendcode(BRIGHTNESS_DOWN, sizeof(BRIGHTNESS_DOWN));
+  sendcode(BRIGHTNESS_UP, sizeof(BRIGHTNESS_UP));
+  sendcode(CURSOR_DOWN ,sizeof(CURSOR_DOWN));
+  sendcode(CURSOR_ENTER,sizeof(CURSOR_ENTER) );
+  sendcode(CURSOR_LEFT, sizeof(CURSOR_LEFT) );
+  sendcode(CURSOR_RIGHT, sizeof(CURSOR_RIGHT) );
+  sendcode(CURSOR_UP ,sizeof(CURSOR_UP));
+  sendcode(FORWARD ,sizeof(FORWARD));
+  sendcode(MUTE_TOGGLE,sizeof(MUTE_TOGGLE) );
+  sendcode(PLAY_PAUSE_TOGGLE, sizeof(PLAY_PAUSE_TOGGLE ));
+  sendcode(RETURN,sizeof(RETURN ));
+  sendcode(REVERSE,sizeof(REVERSE) );
+  sendcode(VOLUME_DOWN,sizeof(VOLUME_DOWN) );
+  sendcode(VOLUME_UP,sizeof(VOLUME_UP) );
+  sendcode(ZOOM,sizeof(ZOOM) );
 }
